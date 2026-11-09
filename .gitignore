@@ -1,0 +1,18 @@
+# Compilados
+/dist
+/out-tsc
+/.angular/cache
+
+# Dependencias
+/node_modules
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Respaldos de base de datos: traen datos personales, nunca se versionan.
+*.sql.gz
+dump*.sql

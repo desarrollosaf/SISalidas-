@@ -1,0 +1,200 @@
+<div class="pagina ancha">
+  <header class="encabezado">
+    <h1 class="titulo">Reportes</h1>
+    <div class="descargas">
+      <button
+        class="boton"
+        type="button"
+        [disabled]="!!descargando() || !resultado()?.resumen?.total"
+        (click)="descargar('excel')"
+      >
+        <app-icono nombre="descarga" [tamano]="18" />
+        {{ descargando() === 'excel' ? 'Generando…' : 'Excel' }}
+      </button>
+      <button
+        class="boton"
+        type="button"
+        [disabled]="!!descargando() || !resultado()?.resumen?.total"
+        (click)="descargar('pdf')"
+      >
+        <app-icono nombre="pdf" [tamano]="18" />
+        {{ descargando() === 'pdf' ? 'Generando…' : 'PDF' }}
+      </button>
+    </div>
+  </header>
+
+  <form class="filtros" (ngSubmit)="consultar()">
+    <div>
+      <label class="etiqueta-campo" for="inicio">Desde</label>
+      <input
+        id="inicio"
+        class="campo"
+        type="date"
+        name="inicio"
+        required
+        [ngModel]="inicio()"
+        (ngModelChange)="inicio.set($event)"
+      />
+    </div>
+    <div>
+      <label class="etiqueta-campo" for="fin">Hasta</label>
+      <input
+        id="fin"
+        class="campo"
+        type="date"
+        name="fin"
+        required
+        [ngModel]="fin()"
+        (ngModelChange)="fin.set($event)"
+      />
+    </div>
+    @if (opciones()?.general) {
+      <div class="amplio">
+        <span class="etiqueta-campo">Dirección</span>
+        <app-buscador
+          etiqueta="Dirección"
+          vacio="Todas"
+          [opciones]="opcionesDireccion()"
+          [(valor)]="direccion"
+        />
+      </div>
+    }
+    <div class="amplio">
+      <span class="etiqueta-campo">Departamento</span>
+      <app-buscador
+        etiqueta="Departamento"
+        vacio="Todos"
+        [opciones]="opcionesDepartamento()"
+        [(valor)]="departamento"
+      />
+    </div>
+    <div class="amplio">
+      <span class="etiqueta-campo">Persona</span>
+      <app-buscador
+        etiqueta="Persona"
+        vacio="Todas"
+        [opciones]="opcionesPersona()"
+        [(valor)]="rfc"
+      />
+    </div>
+    <div>
+      <label class="etiqueta-campo" for="tipo">Tipo</label>
+      <select
+        id="tipo"
+        class="campo"
+        name="tipo"
+        [ngModel]="tipo()"
+        (ngModelChange)="tipo.set($event)"
+      >
+        <option value="">Todos</option>
+        <option value="1">Personal</option>
+        <option value="2">Laboral</option>
+        <option value="3">Comida</option>
+      </select>
+    </div>
+    <div>
+      <label class="etiqueta-campo" for="estado">Estado</label>
+      <select
+        id="estado"
+        class="campo"
+        name="estado"
+        [ngModel]="estado()"
+        (ngModelChange)="estado.set($event)"
+      >
+        <option value="">Todos</option>
+        <option value="pendiente">Sin resolver</option>
+        <option value="aprobado">Aprobado</option>
+        <option value="denegado">Denegado</option>
+      </select>
+    </div>
+    <div class="enviar">
+      <button class="boton primario" type="submit" [disabled]="cargando()">
+        {{ cargando() ? 'Consultando…' : 'Consultar' }}
+      </button>
+    </div>
+  </form>
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+
+  @if (resultado(); as r) {
+    <dl class="resumen" [class.tenue]="cargando()">
+      <div>
+        <dt class="chico apagado">Permisos</dt>
+        <dd>{{ r.resumen.total }}</dd>
+      </div>
+      <div>
+        <dt class="chico apagado">Aprobados</dt>
+        <dd>{{ r.resumen.aprobados }}</dd>
+      </div>
+      <div>
+        <dt class="chico apagado">Sin resolver</dt>
+        <dd>{{ r.resumen.pendientes }}</dd>
+      </div>
+      <div>
+        <dt class="chico apagado">Denegados</dt>
+        <dd>{{ r.resumen.denegados }}</dd>
+      </div>
+    </dl>
+
+    @if (r.permisos.length) {
+      <div class="tabla-marco" [class.tenue]="cargando()">
+        <table>
+          <thead>
+            <tr>
+              <th>Persona</th>
+              <th>Fecha</th>
+              <th>Tipo</th>
+              <th>Solicitado</th>
+              <th>Registrado</th>
+              <th class="derecha">Ocupado</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of r.permisos; track p.id) {
+              <tr>
+                <td class="persona">
+                  <a [routerLink]="['/salidas', p.id]">{{ p.nombre }}</a>
+                  <span class="chico apagado">{{ p.departamento }}</span>
+                </td>
+                <td class="nowrap">{{ fechaCorta(p.fecha) }}</td>
+                <td>{{ p.tipoNombre }}</td>
+                <td class="hora nowrap" data-et="Solicitado">
+                  {{ p.horaSalida }} –
+                  {{ p.regresa ? p.horaRegreso : 'sin regreso' }}
+                </td>
+                <td class="hora nowrap" data-et="Registrado">
+                  @if (p.salidaRegistrada) {
+                    {{ p.salidaRegistrada.slice(0, 5) }} –
+                    {{ p.entradaRegistrada?.slice(0, 5) ?? '…' }}
+                  } @else {
+                    <span class="apagado">—</span>
+                  }
+                </td>
+                <td class="derecha nowrap" data-et="Ocupado" [class.excedido]="excedido(p)">
+                  {{ duracion(p.minutosOcupados) }}
+                </td>
+                <td><span class="estado" [class]="claseEstado(p)">{{ etiquetaEstado(p) }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (r.resumen.total > r.limite) {
+        <p class="chico apagado nota">
+          Se muestran los {{ r.limite }} más recientes. El Excel y el PDF traen los
+          {{ r.resumen.total }}.
+        </p>
+      }
+    } @else {
+      <div class="vacio">
+        <p class="titulo-medio">Sin permisos</p>
+        <p class="apagado">Prueba con otro periodo u otros filtros.</p>
+      </div>
+    }
+  } @else if (cargando()) {
+    <div class="esqueleto alto"></div>
+  }
+</div>

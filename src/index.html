@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <title>Salidas · OSFEM</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/png" href="assets/logo-osfem.png" />
+    <script>
+      // Antes de pintar, para que el tema oscuro no parpadee al cargar.
+      try {
+        const tema = localStorage.getItem('salidas_tema');
+        if (tema) document.documentElement.dataset.tema = tema;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>

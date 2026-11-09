@@ -1,0 +1,183 @@
+<div class="pagina">
+  <header class="encabezado">
+    <h1 class="titulo">Administración</h1>
+  </header>
+
+  <div class="pestanas" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="pestana() === 'validadores'"
+      [class.activa]="pestana() === 'validadores'"
+      (click)="pestana.set('validadores')"
+    >
+      Validadores
+    </button>
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="pestana() === 'jefes'"
+      [class.activa]="pestana() === 'jefes'"
+      (click)="pestana.set('jefes')"
+    >
+      Jefes
+    </button>
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="pestana() === 'roles'"
+      [class.activa]="pestana() === 'roles'"
+      (click)="pestana.set('roles')"
+    >
+      Roles
+    </button>
+  </div>
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+
+  @switch (pestana()) {
+    @case ('validadores') {
+      <p class="apagado explica">
+        Un validador autoriza los permisos de un departamento en lugar de su jefe, por ejemplo cuando
+        la jefatura está vacante.
+      </p>
+      <form class="alta" (ngSubmit)="agregarValidador()">
+        <div>
+          <span class="etiqueta-campo">Persona</span>
+          <app-buscador
+            etiqueta="Persona"
+            vacio="Buscar persona"
+            [opciones]="personas()"
+            [(valor)]="nuevoRfc"
+          />
+        </div>
+        <div>
+          <span class="etiqueta-campo">Departamento que valida</span>
+          <app-buscador
+            etiqueta="Departamento"
+            vacio="Buscar departamento"
+            [opciones]="departamentos()"
+            [(valor)]="nuevoDepartamento"
+          />
+        </div>
+        <button
+          class="boton primario"
+          type="submit"
+          [disabled]="!nuevoRfc() || !nuevoDepartamento() || ocupado()"
+        >
+          Agregar
+        </button>
+      </form>
+
+      <ul class="lista">
+        @for (validador of validadores(); track validador.id) {
+          <li>
+            <span class="principal">
+              <strong>{{ validador.nombre }}</strong>
+              <span class="chico apagado">{{ validador.departamento }}</span>
+            </span>
+            <button
+              type="button"
+              class="boton-icono"
+              [attr.aria-label]="'Quitar a ' + validador.nombre"
+              (click)="quitarValidador(validador)"
+            >
+              <app-icono nombre="cerrar" [tamano]="18" />
+            </button>
+          </li>
+        } @empty {
+          <li class="apagado sin-datos">Todavía no hay validadores especiales.</li>
+        }
+      </ul>
+    }
+    @case ('jefes') {
+      <p class="apagado explica">
+        Vienen del padrón de la SAF: autorizan los permisos de su departamento. Cualquier cambio se
+        hace allá.
+      </p>
+      <input
+        class="campo filtro"
+        placeholder="Buscar por nombre o departamento"
+        aria-label="Buscar jefe"
+        [ngModel]="filtroJefes()"
+        (ngModelChange)="filtroJefes.set($event)"
+      />
+      <ul class="lista">
+        @for (jefe of jefesVisibles(); track jefe.rfc) {
+          <li>
+            <span class="principal">
+              <strong>{{ jefe.nombre }}</strong>
+              <span class="chico apagado">{{ jefe.departamento }}</span>
+            </span>
+          </li>
+        } @empty {
+          <li class="apagado sin-datos">Sin coincidencias.</li>
+        }
+      </ul>
+    }
+    @case ('roles') {
+      <p class="apagado explica">
+        Un rol da acceso adicional. Quien no es de OSFEM solo puede entrar con un rol asignado.
+      </p>
+      <form class="alta" (ngSubmit)="asignarRol()">
+        <div>
+          <label class="etiqueta-campo" for="rol-rfc">RFC</label>
+          <input
+            id="rol-rfc"
+            class="campo hora"
+            name="rfc"
+            maxlength="20"
+            autocapitalize="characters"
+            [ngModel]="rolRfc()"
+            (ngModelChange)="rolRfc.set($event)"
+          />
+        </div>
+        <div>
+          <label class="etiqueta-campo" for="rol-clave">Rol</label>
+          <select
+            id="rol-clave"
+            class="campo"
+            name="rol"
+            [ngModel]="rolClave()"
+            (ngModelChange)="rolClave.set($event)"
+          >
+            <option value="">Elige un rol</option>
+            @for (rol of catalogoRoles(); track rol.clave) {
+              <option [value]="rol.clave">{{ rol.nombre }}</option>
+            }
+          </select>
+        </div>
+        <button
+          class="boton primario"
+          type="submit"
+          [disabled]="!rolRfc() || !rolClave() || ocupado()"
+        >
+          Asignar
+        </button>
+      </form>
+
+      <ul class="lista">
+        @for (asignacion of asignaciones(); track asignacion.rfc) {
+          <li>
+            <span class="principal">
+              <strong>{{ asignacion.nombre }}</strong>
+              <span class="chico apagado">{{ asignacion.rolNombre }}</span>
+            </span>
+            <button
+              type="button"
+              class="boton-icono"
+              [attr.aria-label]="'Quitar rol a ' + asignacion.nombre"
+              (click)="quitarRol(asignacion)"
+            >
+              <app-icono nombre="cerrar" [tamano]="18" />
+            </button>
+          </li>
+        } @empty {
+          <li class="apagado sin-datos">Sin roles asignados.</li>
+        }
+      </ul>
+    }
+  }
+</div>

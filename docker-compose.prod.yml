@@ -1,0 +1,22 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: DockerFile
+      args:
+        BASE_HREF: /salidas/
+    container_name: sisalidas-frontend
+    ports:
+      - "8079:80"
+    restart: always
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: DockerFile
+    container_name: sisalidas-backend
+    env_file:
+      - ./backend/.env
+    restart: always

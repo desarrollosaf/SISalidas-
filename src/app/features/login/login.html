@@ -1,0 +1,131 @@
+<div class="lienzo">
+  <!-- Panel institucional: la marca, el reloj y la regla de jornada -->
+  <aside class="panel" aria-hidden="true">
+    <div class="panel-brillo"></div>
+
+    <div class="panel-cabeza">
+      <span class="marca">Salidas</span>
+      <span class="punto"></span>
+      <span class="marca-sub">OSFEM</span>
+    </div>
+
+    <div class="panel-centro">
+      <p class="fecha">{{ fecha() }}</p>
+      <p class="reloj">
+        {{ hora() }}<span class="segundos">{{ segundos() }}</span>
+      </p>
+      <h1 class="titulo panel-titulo">Tu jornada,<br /><em>en orden.</em></h1>
+      <p class="panel-sub">Solicita, valida y consulta tus permisos de salida en un solo lugar.</p>
+    </div>
+
+    <div class="boleta">
+      <div class="boleta-cabeza">
+        <span class="boleta-etiqueta">Permiso de comida</span>
+        <span class="sello">Aprobado</span>
+      </div>
+      <app-regla salida="12:30" regreso="14:15" [ahora]="ahoraJornada()" [compacta]="true" />
+    </div>
+  </aside>
+
+  <!-- Formulario -->
+  <main class="lado-formulario">
+    <header class="cabeza">
+      <img src="assets/logo-osfem.png" alt="OSFEM" width="59" height="32" />
+      <span class="antetitulo">Órgano Superior de Fiscalización<br />del Estado de México</span>
+    </header>
+
+    <div class="tarjeta">
+      <h2 class="titulo-medio">Bienvenido</h2>
+      <p class="apagado sub">Entra con tu RFC y tu contraseña de siempre.</p>
+
+      <form class="formulario" (ngSubmit)="entrar()">
+        @if (motivo() === 'inactividad') {
+          <p class="nota">Cerramos tu sesión por inactividad.</p>
+        } @else if (motivo() === 'sesion') {
+          <p class="nota">Tu sesión terminó. Vuelve a entrar.</p>
+        }
+
+        <div>
+          <label class="etiqueta-campo" for="rfc">RFC</label>
+          <div class="campo-envoltura">
+            <svg class="campo-icono" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6" />
+            </svg>
+            <input
+              id="rfc"
+              class="campo rfc"
+              name="rfc"
+              placeholder="ABCD000000XXX"
+              autocomplete="username"
+              autocapitalize="characters"
+              spellcheck="false"
+              required
+              [(ngModel)]="rfc"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="etiqueta-campo" for="contrasena">Contraseña</label>
+          <div class="campo-envoltura">
+            <svg class="campo-icono" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+            </svg>
+            <input
+              id="contrasena"
+              class="campo con-boton"
+              name="contrasena"
+              [type]="verContrasena() ? 'text' : 'password'"
+              autocomplete="current-password"
+              required
+              [(ngModel)]="contrasena"
+            />
+            <button
+              type="button"
+              class="ver"
+              [attr.aria-label]="verContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              [attr.aria-pressed]="verContrasena()"
+              (click)="verContrasena.set(!verContrasena())"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                <circle cx="12" cy="12" r="3" />
+                @if (verContrasena()) {
+                  <path d="M4 4l16 16" />
+                }
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        @if (error()) {
+          <p class="error" role="alert">{{ error() }}</p>
+        }
+
+        <button class="boton primario grande" type="submit" [disabled]="enviando()">
+          @if (enviando()) {
+            <span class="giro" aria-hidden="true"></span>
+            Entrando…
+          } @else {
+            Entrar
+            <svg class="flecha" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          }
+        </button>
+      </form>
+    </div>
+
+    <footer class="pie">
+      <a
+        class="chico apagado"
+        href="https://legislativoedomex.gob.mx/storage/documentos/avisosprivacidad/direccion-de-administracion-y-desarrollo-de-personal.pdf"
+        target="_blank"
+        rel="noopener"
+        >Aviso de privacidad</a
+      >
+    </footer>
+  </main>
+</div>

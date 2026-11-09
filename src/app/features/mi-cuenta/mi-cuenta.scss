@@ -1,0 +1,70 @@
+.angosta {
+  max-width: 640px;
+}
+
+.alto {
+  height: 300px;
+}
+
+.unidad {
+  margin-top: 8px;
+}
+
+.aclara {
+  margin-top: 2px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.doble {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.reglas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 10px 0 0;
+  padding: 0;
+  color: var(--apagado);
+  font-size: 0.8125rem;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .cumplida {
+    color: var(--verde);
+  }
+}
+
+.aviso {
+  margin-top: 6px;
+  color: var(--peligro);
+}
+
+.solo-movil {
+  display: none;
+}
+
+.fila-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 720px) {
+  .solo-movil {
+    display: block;
+  }
+}

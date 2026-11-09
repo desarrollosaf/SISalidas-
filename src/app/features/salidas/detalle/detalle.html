@@ -1,0 +1,122 @@
+<div class="pagina">
+  <button type="button" class="volver chico apagado" (click)="volver()">
+    <app-icono nombre="atras" [tamano]="16" /> Volver
+  </button>
+
+  @if (error()) {
+    <div class="vacio">
+      <p class="titulo-medio">No pudimos abrir este permiso</p>
+      <p class="apagado">{{ error() }}</p>
+    </div>
+  } @else if (!permiso()) {
+    <div class="esqueleto alto"></div>
+  } @else if (permiso(); as p) {
+    <header>
+      <p class="antetitulo hora folio">{{ p.folio }}</p>
+      <h1 class="titulo">{{ p.tipoNombre }}, <em>{{ fecha() }}</em></h1>
+      @if (!p.esPropio) {
+        <p class="persona">
+          <strong>{{ p.nombre }}</strong>
+          <span class="apagado chico">{{ p.departamento }}</span>
+        </p>
+      }
+      <p class="estados">
+        <span class="estado" [class]="claseEstado(p)">{{ etiquetaEstado(p) }}</span>
+        @if (!p.activo && p.estado !== 'pendiente') {
+          <span class="apagado chico">Permiso cerrado</span>
+        }
+      </p>
+    </header>
+
+    <div class="regla">
+      <app-regla
+        [salida]="p.horaSalida"
+        [regreso]="p.horaRegreso"
+        [regresa]="p.regresa"
+        [salidaReal]="p.salidaRegistrada"
+        [entradaReal]="p.entradaRegistrada"
+        [tono]="claseEstado(p)"
+      />
+      <div class="leyenda">
+        <span><i></i> Solicitado</span>
+        <span><i class="real"></i> Registrado en el checador</span>
+      </div>
+    </div>
+
+    <dl class="cifras">
+      <div>
+        <dt class="chico apagado">Solicitado</dt>
+        <dd class="hora">
+          {{ p.horaSalida }}
+          @if (p.regresa) {
+            – {{ p.horaRegreso }}
+          } @else {
+            · sin regreso
+          }
+        </dd>
+      </div>
+      @if (p.minutosSolicitados != null) {
+        <div>
+          <dt class="chico apagado">Tiempo solicitado</dt>
+          <dd>{{ duracion(p.minutosSolicitados) }}</dd>
+        </div>
+      }
+      @if (p.minutosOcupados != null) {
+        <div>
+          <dt class="chico apagado">Tiempo ocupado</dt>
+          <dd [class.excedido]="excedido() > 0">
+            {{ duracion(p.minutosOcupados) }}
+            @if (excedido() > 0) {
+              <span class="chico">+{{ duracion(excedido()) }}</span>
+            }
+          </dd>
+        </div>
+      }
+    </dl>
+
+    @if (p.puedeValidar && p.estado === 'pendiente' && p.activo) {
+      <div class="decision">
+        <button class="boton grande" type="button" [disabled]="ocupado()" (click)="decidir(false)">
+          Denegar
+        </button>
+        <button
+          class="boton primario grande"
+          type="button"
+          [disabled]="ocupado()"
+          (click)="decidir(true)"
+        >
+          <app-icono nombre="listo" [tamano]="18" /> Aprobar
+        </button>
+      </div>
+    }
+
+    <section class="seccion">
+      <h2 class="titulo-chico">Bitácora</h2>
+      <ol class="bitacora">
+        @for (evento of bitacora(); track $index) {
+          <li [class]="evento.estado">
+            <span class="punto"></span>
+            <span class="evento">
+              {{ evento.etiqueta }}
+              @if (evento.nota) {
+                <span class="chico apagado nota">{{ evento.nota }}</span>
+              }
+            </span>
+            <span class="hora apagado">{{ evento.hora ?? '—' }}</span>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <div class="acciones">
+      <button class="boton" type="button" (click)="verPdf()">
+        <app-icono nombre="pdf" [tamano]="18" /> Ver formato PDF
+      </button>
+      @if (p.activo && (p.esPropio || p.puedeValidar)) {
+        <button class="boton peligro" type="button" [disabled]="ocupado()" (click)="cerrar()">
+          Cerrar permiso
+        </button>
+      }
+    </div>
+  }
+</div>

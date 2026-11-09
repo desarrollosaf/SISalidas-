@@ -1,0 +1,183 @@
+.ancha {
+  max-width: 1200px;
+}
+
+.descargas {
+  display: flex;
+  gap: 8px;
+}
+
+.filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  align-items: end;
+  gap: 14px;
+}
+
+.amplio {
+  grid-column: span 2;
+}
+
+.enviar .boton {
+  width: 100%;
+}
+
+.error {
+  margin-top: 16px;
+  color: var(--peligro);
+}
+
+.resumen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 44px;
+  margin: 36px 0 24px;
+  transition: opacity 0.15s ease;
+
+  dd {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    line-height: 1.1;
+  }
+}
+
+.tenue {
+  opacity: 0.5;
+}
+
+.tabla-marco {
+  overflow-x: auto;
+  border-radius: 16px;
+  box-shadow: 0 0 0 1px var(--linea);
+  background: var(--superficie);
+  transition: opacity 0.15s ease;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+th {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--linea);
+  color: var(--apagado);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--linea);
+  vertical-align: top;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:hover {
+  background: var(--fondo-2);
+}
+
+.persona {
+  min-width: 220px;
+
+  a {
+    display: block;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--vino);
+    }
+  }
+
+  span {
+    display: block;
+  }
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.derecha {
+  text-align: right;
+}
+
+.excedido {
+  color: var(--ambar);
+  font-weight: 600;
+}
+
+.nota {
+  margin-top: 12px;
+}
+
+.alto {
+  height: 300px;
+  margin-top: 32px;
+}
+
+@media (max-width: 520px) {
+  .amplio {
+    grid-column: span 1;
+  }
+
+  .filtros {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// En celular la tabla no cabe: cada permiso se vuelve una tarjeta con sus datos etiquetados.
+@media (max-width: 720px) {
+  thead {
+    display: none;
+  }
+
+  table,
+  tbody,
+  tr {
+    display: block;
+  }
+
+  tr {
+    padding: 14px;
+    border-bottom: 1px solid var(--linea);
+  }
+
+  tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  td {
+    display: inline-block;
+    padding: 0 12px 4px 0;
+    border: 0;
+    font-size: 0.875rem;
+  }
+
+  td.persona {
+    display: block;
+    min-width: 0;
+    padding-bottom: 8px;
+    font-size: 0.9375rem;
+  }
+
+  td[data-et] {
+    display: block;
+    padding-right: 0;
+    text-align: left;
+
+    &::before {
+      content: attr(data-et) ' ';
+      color: var(--apagado);
+      font-family: var(--sans);
+    }
+  }
+}

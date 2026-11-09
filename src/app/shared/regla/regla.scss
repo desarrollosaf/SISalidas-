@@ -1,0 +1,202 @@
+:host {
+  display: block;
+  --alto: 56px;
+}
+
+:host(.compacta) {
+  --alto: 22px;
+}
+
+.regla {
+  --color: var(--vino);
+  --relleno: var(--vino-suave);
+
+  &[data-tono='pendiente'] {
+    --color: var(--ambar);
+    --relleno: var(--ambar-suave);
+  }
+
+  &[data-tono='denegado'] {
+    --color: var(--apagado);
+    --relleno: var(--linea);
+  }
+
+  &.editable {
+    --alto: 88px;
+  }
+}
+
+.pista {
+  position: relative;
+  height: var(--alto);
+  border-radius: 10px;
+  background-color: var(--fondo-2);
+  // Una marca por cada una de las 9 horas de la jornada.
+  background-image: linear-gradient(to right, var(--linea) 1px, transparent 1px);
+  background-size: calc(100% / 9) 100%;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--linea);
+
+  .editable & {
+    cursor: crosshair;
+    touch-action: pan-y;
+    overflow: visible;
+  }
+}
+
+:host(.compacta) .pista {
+  border-radius: 6px;
+}
+
+.bloque {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--relleno);
+  box-shadow: inset 2px 0 0 var(--color), inset -2px 0 0 var(--color);
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &.sin-regreso {
+    // Sale y no vuelve: se desvanece hacia el fin de la jornada.
+    background: linear-gradient(to right, var(--relleno), transparent);
+    box-shadow: inset 2px 0 0 var(--color);
+  }
+
+  .editable & {
+    cursor: grab;
+    touch-action: none;
+    border-radius: 2px;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+.asa {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: ew-resize;
+  touch-action: none;
+  border-radius: 8px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 34px;
+    border-radius: 3px;
+    background: var(--color);
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease;
+  }
+
+  &:hover::after,
+  &:active::after {
+    transform: translate(-50%, -50%) scaleX(1.35);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color);
+    outline-offset: 2px;
+  }
+
+  &.inicio {
+    left: -14px;
+  }
+
+  &.fin {
+    right: -14px;
+  }
+}
+
+.etiqueta {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--color);
+  color: var(--sobre-vino);
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.elevada .etiqueta {
+  bottom: calc(100% + 34px);
+}
+
+.real {
+  position: absolute;
+  bottom: 5px;
+  height: 5px;
+  min-width: 5px;
+  border-radius: 3px;
+  background: var(--tinta);
+  pointer-events: none;
+
+  &.abierto {
+    width: 5px !important;
+  }
+}
+
+:host(.compacta) .real {
+  bottom: 3px;
+  height: 3px;
+}
+
+.ahora {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: var(--tinta);
+  opacity: 0.55;
+  pointer-events: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--tinta);
+    transform: translate(-50%, -50%);
+  }
+}
+
+.horas {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: var(--apagado);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+
+  span {
+    width: 0;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .horas .impar {
+    visibility: hidden;
+  }
+}

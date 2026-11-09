@@ -1,0 +1,148 @@
+<div class="pagina angosta">
+  <header class="encabezado">
+    <h1 class="titulo">Mi cuenta</h1>
+  </header>
+
+  @if (perfil(); as p) {
+    <section class="identidad">
+      <p class="titulo-medio">{{ p.nombre }}</p>
+      <p class="hora apagado">{{ p.rfc }}</p>
+      <p class="chico apagado unidad">
+        {{ p.departamento }}
+        @if (p.direccion) {
+          <br />{{ p.direccion }}
+        }
+      </p>
+    </section>
+
+    <section class="seccion">
+      <h2 class="titulo-chico">Datos de contacto</h2>
+      <p class="chico apagado aclara">A este correo llegan los avisos de tus permisos.</p>
+      <form class="formulario" #datos="ngForm" (ngSubmit)="guardarDatos()">
+        <div>
+          <label class="etiqueta-campo" for="email">Correo</label>
+          <input
+            id="email"
+            class="campo"
+            type="email"
+            name="email"
+            required
+            maxlength="50"
+            autocomplete="email"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+          />
+        </div>
+        <div class="doble">
+          <div>
+            <label class="etiqueta-campo" for="celular">Celular</label>
+            <input
+              id="celular"
+              class="campo hora"
+              name="celular"
+              inputmode="numeric"
+              required
+              pattern="[0-9]{10}"
+              maxlength="10"
+              autocomplete="tel"
+              [ngModel]="celular()"
+              (ngModelChange)="celular.set($event)"
+            />
+          </div>
+          <div>
+            <label class="etiqueta-campo" for="telefono">Teléfono</label>
+            <input
+              id="telefono"
+              class="campo hora"
+              name="telefono"
+              inputmode="numeric"
+              required
+              pattern="[0-9]{10}"
+              maxlength="10"
+              [ngModel]="telefono()"
+              (ngModelChange)="telefono.set($event)"
+            />
+          </div>
+        </div>
+        <div>
+          <button class="boton primario" type="submit" [disabled]="datos.invalid || guardando()">
+            {{ guardando() ? 'Guardando…' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="seccion">
+      <h2 class="titulo-chico">Contraseña</h2>
+      <p class="chico apagado aclara">Es la misma de los demás sistemas de la SAF.</p>
+      <form class="formulario" (ngSubmit)="cambiarContrasena()">
+        <div>
+          <label class="etiqueta-campo" for="actual">Contraseña actual</label>
+          <input
+            id="actual"
+            class="campo"
+            type="password"
+            name="actual"
+            autocomplete="current-password"
+            [ngModel]="actual()"
+            (ngModelChange)="actual.set($event)"
+          />
+        </div>
+        <div>
+          <label class="etiqueta-campo" for="nueva">Contraseña nueva</label>
+          <input
+            id="nueva"
+            class="campo"
+            type="password"
+            name="nueva"
+            autocomplete="new-password"
+            [ngModel]="nueva()"
+            (ngModelChange)="nueva.set($event)"
+          />
+          <ul class="reglas">
+            @for (regla of reglas(); track regla.texto) {
+              <li [class.cumplida]="regla.ok">
+                <app-icono [nombre]="regla.ok ? 'listo' : 'mas'" [tamano]="14" />
+                {{ regla.texto }}
+              </li>
+            }
+          </ul>
+        </div>
+        <div>
+          <label class="etiqueta-campo" for="confirmacion">Confírmala</label>
+          <input
+            id="confirmacion"
+            class="campo"
+            type="password"
+            name="confirmacion"
+            autocomplete="new-password"
+            [ngModel]="confirmacion()"
+            (ngModelChange)="confirmacion.set($event)"
+          />
+          @if (confirmacion() && confirmacion() !== nueva()) {
+            <p class="chico aviso">No coincide con la contraseña nueva.</p>
+          }
+        </div>
+        <div>
+          <button class="boton primario" type="submit" [disabled]="!puedeCambiar()">
+            {{ cambiando() ? 'Cambiando…' : 'Cambiar contraseña' }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="seccion solo-movil">
+      <div class="fila-acciones">
+        <button type="button" class="boton" (click)="tema.alternar()">
+          <app-icono [nombre]="tema.oscuro() ? 'sol' : 'luna'" [tamano]="18" />
+          {{ tema.oscuro() ? 'Tema claro' : 'Tema oscuro' }}
+        </button>
+        <button type="button" class="boton" (click)="salir()">
+          <app-icono nombre="salir" [tamano]="18" /> Cerrar sesión
+        </button>
+      </div>
+    </section>
+  } @else {
+    <div class="esqueleto alto"></div>
+  }
+</div>

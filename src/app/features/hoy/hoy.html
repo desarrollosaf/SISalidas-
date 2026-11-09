@@ -1,0 +1,96 @@
+<div class="pagina">
+  <p class="antetitulo fecha">{{ fecha }}</p>
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  } @else if (!datos()) {
+    <div class="esqueleto alto"></div>
+  } @else {
+    @if (activo(); as permiso) {
+      <h1 class="titulo">
+        @switch (permiso.estado) {
+          @case ('aprobado') {
+            Tienes una salida <em>aprobada</em>
+          }
+          @default {
+            Tu salida espera <em>respuesta</em>
+          }
+        }
+      </h1>
+      <p class="resumen">
+        {{ fechaRelativa(permiso.fecha) }}, {{ permiso.tipoNombre.toLowerCase() }},
+        @if (permiso.regresa) {
+          de <span class="hora">{{ permiso.horaSalida }}</span> a
+          <span class="hora">{{ permiso.horaRegreso }}</span>
+        } @else {
+          desde las <span class="hora">{{ permiso.horaSalida }}</span>, sin regreso
+        }
+      </p>
+      <div class="principal">
+        <app-regla
+          [salida]="permiso.horaSalida"
+          [regreso]="permiso.horaRegreso"
+          [regresa]="permiso.regresa"
+          [salidaReal]="permiso.salidaRegistrada"
+          [entradaReal]="permiso.entradaRegistrada"
+          [ahora]="esHoy() ? ahora() : null"
+          [tono]="permiso.estado"
+        />
+      </div>
+      <div class="acciones">
+        <a class="boton primario grande" [routerLink]="['/salidas', permiso.id]">
+          Ver permiso <app-icono nombre="flecha" [tamano]="18" />
+        </a>
+      </div>
+    } @else {
+      <h1 class="titulo">Sin salidas <em>por ahora</em></h1>
+      <p class="resumen apagado">Hoy tu jornada corre sin permisos activos.</p>
+      <div class="principal vacia">
+        <div class="pista-vacia"></div>
+      </div>
+      <div class="acciones">
+        <a class="boton primario grande" routerLink="/salidas/nueva">
+          <app-icono nombre="mas" [tamano]="18" /> Solicitar salida
+        </a>
+      </div>
+    }
+
+    @if (pendientes().length) {
+      <a class="llamado" routerLink="/validar">
+        <span class="numero">{{ pendientes().length }}</span>
+        <span>
+          <strong>{{
+            pendientes().length === 1 ? 'solicitud espera' : 'solicitudes esperan'
+          }}</strong>
+          tu respuesta
+        </span>
+        <app-icono nombre="flecha" [tamano]="18" />
+      </a>
+    }
+
+    @if (recientes().length) {
+      <section class="seccion">
+        <div class="titulo-seccion">
+          <h2 class="titulo-chico">Recientes</h2>
+          <a class="chico apagado" routerLink="/salidas">Ver todas</a>
+        </div>
+        @for (permiso of recientes(); track permiso.id) {
+          <app-fila-permiso [permiso]="permiso" />
+        }
+      </section>
+    }
+
+    @if (aprobadosDelAnio() > 0) {
+      <section class="seccion cifras">
+        <div>
+          <p class="cifra">{{ aprobadosDelAnio() }}</p>
+          <p class="chico apagado">salidas aprobadas este año</p>
+        </div>
+        <div>
+          <p class="cifra">{{ duracion(tiempoDelAnio()) }}</p>
+          <p class="chico apagado">registradas en el checador</p>
+        </div>
+      </section>
+    }
+  }
+</div>

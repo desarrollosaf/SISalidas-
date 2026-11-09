@@ -1,0 +1,64 @@
+<div class="pagina">
+  <header class="encabezado">
+    <h1 class="titulo">Mis salidas</h1>
+    @if (datos() && !tieneActivo()) {
+      <a class="boton primario" routerLink="/salidas/nueva">
+        <app-icono nombre="mas" [tamano]="18" /> Solicitar
+      </a>
+    }
+  </header>
+
+  <div class="barra">
+    <div class="pastillas" role="group" aria-label="Filtrar por estado">
+      @for (opcion of filtros; track opcion.valor) {
+        <button
+          type="button"
+          class="pastilla"
+          [class.activa]="filtro() === opcion.valor"
+          [attr.aria-pressed]="filtro() === opcion.valor"
+          (click)="filtro.set(opcion.valor)"
+        >
+          {{ opcion.texto }}
+        </button>
+      }
+    </div>
+    <div class="anio">
+      <button type="button" class="boton-icono" aria-label="Año anterior" (click)="cambiarAnio(-1)">
+        <app-icono nombre="atras" [tamano]="18" />
+      </button>
+      <span class="hora">{{ anio() }}</span>
+      <button
+        type="button"
+        class="boton-icono"
+        aria-label="Año siguiente"
+        [disabled]="esAnioActual"
+        [style.visibility]="esAnioActual ? 'hidden' : 'visible'"
+        (click)="cambiarAnio(1)"
+      >
+        <app-icono nombre="flecha" [tamano]="18" />
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  } @else if (!datos()) {
+    @for (i of [1, 2, 3, 4]; track i) {
+      <div class="esqueleto hueco"></div>
+    }
+  } @else {
+    @for (grupo of grupos(); track grupo.mes) {
+      <section class="grupo">
+        <h2 class="mes">{{ grupo.mes }}</h2>
+        @for (permiso of grupo.permisos; track permiso.id) {
+          <app-fila-permiso [permiso]="permiso" />
+        }
+      </section>
+    } @empty {
+      <div class="vacio">
+        <p class="titulo-medio">Nada por aquí</p>
+        <p class="apagado">No hay salidas con este filtro en {{ anio() }}.</p>
+      </div>
+    }
+  }
+</div>

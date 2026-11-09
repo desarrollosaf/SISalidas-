@@ -1,0 +1,256 @@
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--tinta);
+  }
+}
+
+.tipos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.tipo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--superficie);
+  box-shadow: inset 0 0 0 1px var(--linea);
+  color: var(--tinta);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  app-icono {
+    margin-bottom: 10px;
+    color: var(--apagado);
+  }
+
+  &:hover {
+    background: var(--fondo-2);
+  }
+
+  &.activo {
+    background: var(--vino-suave);
+    box-shadow: inset 0 0 0 2px var(--vino);
+
+    app-icono,
+    .tipo-texto {
+      color: var(--vino);
+    }
+  }
+}
+
+.tipo-texto {
+  font-weight: 600;
+}
+
+.bloque {
+  margin-top: 40px;
+}
+
+.titulo-con-accion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ayuda {
+  margin-top: 2px;
+}
+
+.fechas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pastilla {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--superficie);
+  box-shadow: inset 0 0 0 1px var(--linea);
+  color: var(--tinta);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+
+  &.activa {
+    background: var(--tinta);
+    box-shadow: none;
+    color: var(--fondo);
+  }
+}
+
+.fecha {
+  width: auto;
+  flex: 1;
+  min-width: 160px;
+  max-width: 220px;
+}
+
+.interruptor {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  cursor: pointer;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--vino);
+  }
+}
+
+.regla-editable {
+  // Espacio para las etiquetas con la hora que flotan arriba de las asas (hasta dos niveles).
+  margin-top: 72px;
+  padding: 0 14px;
+}
+
+.horas-escritas {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+
+  > div {
+    flex: 1;
+    max-width: 180px;
+  }
+}
+
+.separado {
+  margin-top: 16px;
+}
+
+.destinos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 260px;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+
+.destino {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--fondo-2);
+  color: var(--tinta);
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--linea);
+  }
+
+  &.activo {
+    background: var(--vino);
+    color: var(--sobre-vino);
+  }
+}
+
+.legal {
+  margin-top: 40px;
+
+  summary {
+    cursor: pointer;
+  }
+
+  p {
+    margin-top: 8px;
+  }
+}
+
+// La confirmación queda siempre a la vista, con la solicitud escrita en una frase.
+.envio {
+  position: sticky;
+  z-index: 10;
+  bottom: 16px;
+  margin-top: 28px;
+}
+
+.envio-interior {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding: 14px 14px 14px 22px;
+  border-radius: 20px;
+  background: var(--superficie);
+  box-shadow:
+    0 0 0 1px var(--linea),
+    0 12px 40px rgb(0 0 0 / 10%);
+}
+
+.frase {
+  flex: 1;
+  min-width: 220px;
+}
+
+.frase-texto {
+  font-family: var(--serif);
+  font-size: 1.3125rem;
+  line-height: 1.2;
+}
+
+.error {
+  color: var(--peligro);
+}
+
+@media (max-width: 720px) {
+  .envio {
+    bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  .envio-interior {
+    padding: 12px;
+  }
+
+  .frase {
+    padding: 0 6px;
+  }
+
+  .frase-texto {
+    font-size: 1.125rem;
+  }
+
+  .envio-interior .boton {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .tipo {
+    padding: 12px;
+  }
+
+  .tipo .apagado {
+    display: none;
+  }
+}

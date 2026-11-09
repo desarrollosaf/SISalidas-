@@ -1,0 +1,38 @@
+# Etapa de compilación
+FROM node:24-alpine AS build
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm ci
+
+COPY . .
+
+RUN npm run build
+
+# Etapa de producción
+FROM node:24-alpine AS production
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY package*.json ./
+
+# Se instalan también las devDependencies porque sequelize-cli (migrate/seed) se ejecuta dentro de
+# este contenedor con "docker compose exec backend npm run migrate".
+RUN npm ci --include=dev
+
+COPY --from=build /app/dist ./dist
+
+# sequelize-cli no lee dist/: resuelve migraciones y seeders desde src/database.
+COPY --from=build /app/src/database ./src/database
+COPY --from=build /app/.sequelizerc ./.sequelizerc
+
+# Membrete de los PDF.
+COPY --from=build /app/assets ./assets
+
+EXPOSE 3070
+
+CMD ["node", "dist/main.js"]

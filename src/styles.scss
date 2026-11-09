@@ -1,0 +1,405 @@
+/*
+ * Sistema de diseño de Salidas.
+ * Papel cálido, tinta casi negra y un solo acento: el vino institucional de OSFEM. Los títulos van
+ * en serif editorial y toda hora en monoespaciada, como en un reloj checador.
+ */
+
+/* El "1" de Instrument Serif parece una "l" ("11 h" se leía "ll h"): los dígitos de los títulos
+   salen de la sans. Es lo único que esta fuente toma de ella. */
+@font-face {
+  font-family: 'Digitos Titulo';
+  src: url('../node_modules/@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2')
+    format('woff2-variations');
+  font-weight: 400 700;
+  font-display: swap;
+  unicode-range: U+30-39;
+}
+
+:root {
+  --fondo: #faf8f5;
+  --fondo-2: #f2eeea;
+  --superficie: #ffffff;
+  --tinta: #1e1619;
+  --apagado: #6f6468;
+  --linea: #e6e0db;
+  --vino: #960948;
+  --vino-fuerte: #76063a;
+  --vino-suave: rgb(150 9 72 / 13%);
+  --sobre-vino: #ffffff;
+  --ambar: #b4560f;
+  --ambar-suave: rgb(198 93 18 / 15%);
+  --verde: #2f7a4b;
+  --verde-suave: rgb(47 122 75 / 13%);
+  --peligro: #b3261e;
+  --serif: 'Digitos Titulo', 'Instrument Serif', Georgia, serif;
+  --sans: 'Instrument Sans Variable', system-ui, sans-serif;
+  --mono: 'DM Mono', ui-monospace, monospace;
+  color-scheme: light;
+}
+
+@mixin oscuro {
+  --fondo: #151013;
+  --fondo-2: #211a1d;
+  --superficie: #1c1619;
+  --tinta: #f4efec;
+  --apagado: #a59a9e;
+  --linea: #33292d;
+  --vino: #ee5e9b;
+  --vino-fuerte: #f57fb1;
+  --vino-suave: rgb(238 94 155 / 17%);
+  --sobre-vino: #2a0515;
+  --ambar: #eea35d;
+  --ambar-suave: rgb(238 163 93 / 16%);
+  --verde: #70c691;
+  --verde-suave: rgb(112 198 145 / 15%);
+  --peligro: #f2867e;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) {
+    @include oscuro;
+  }
+}
+
+:root[data-tema='oscuro'] {
+  @include oscuro;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--vino);
+  outline-offset: 2px;
+}
+
+/* --- Tipografía --- */
+.titulo {
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+
+  em {
+    color: var(--vino);
+  }
+}
+
+.titulo-medio {
+  font-family: var(--serif);
+  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+  font-weight: 400;
+  line-height: 1.12;
+}
+
+.titulo-chico {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.antetitulo {
+  color: var(--apagado);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.apagado {
+  color: var(--apagado);
+}
+
+.chico {
+  font-size: 0.875rem;
+}
+
+.hora {
+  font-family: var(--mono);
+  font-size: 0.9375em;
+  letter-spacing: -0.01em;
+}
+
+/* --- Página --- */
+.pagina {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 56px) clamp(16px, 4vw, 40px) 120px;
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+
+.seccion {
+  margin-top: 48px;
+}
+
+.seccion > .titulo-chico {
+  margin-bottom: 14px;
+}
+
+.tarjeta {
+  padding: clamp(18px, 3vw, 26px);
+  border-radius: 18px;
+  background: var(--superficie);
+  box-shadow: 0 0 0 1px var(--linea);
+}
+
+/* --- Botones --- */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--linea);
+  color: var(--tinta);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--fondo-2);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.primario {
+    background: var(--vino);
+    box-shadow: none;
+    color: var(--sobre-vino);
+
+    &:hover:not(:disabled) {
+      background: var(--vino-fuerte);
+    }
+  }
+
+  &.peligro {
+    color: var(--peligro);
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--peligro) 10%, transparent);
+    }
+  }
+
+  &.grande {
+    min-height: 52px;
+    padding: 0 26px;
+    font-size: 1rem;
+  }
+}
+
+.boton-icono {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--apagado);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--fondo-2);
+    color: var(--tinta);
+  }
+}
+
+/* --- Formularios --- */
+.campo {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--superficie);
+  box-shadow: inset 0 0 0 1px var(--linea);
+  color: var(--tinta);
+  font: inherit;
+  font-size: 1rem;
+  appearance: none;
+
+  &::placeholder {
+    color: var(--apagado);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--vino);
+  }
+
+  &:disabled {
+    background: var(--fondo-2);
+    color: var(--apagado);
+  }
+}
+
+select.campo {
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23857a7e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m1 1.5 5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  text-overflow: ellipsis;
+}
+
+.etiqueta-campo {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* --- Estado --- */
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--apagado);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &.pendiente {
+    color: var(--ambar);
+  }
+
+  &.aprobado {
+    color: var(--verde);
+  }
+}
+
+/* --- Vacío y carga --- */
+.vacio {
+  padding: 56px 16px;
+  text-align: center;
+
+  .titulo-medio {
+    margin-bottom: 6px;
+  }
+}
+
+.esqueleto {
+  height: 84px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--fondo-2) 25%, var(--linea) 50%, var(--fondo-2) 75%);
+  background-size: 200% 100%;
+  animation: brillo 1.4s linear infinite;
+}
+
+@keyframes brillo {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* --- Leyenda de la regla --- */
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 10px;
+  color: var(--apagado);
+  font-size: 0.8125rem;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  i {
+    width: 14px;
+    height: 10px;
+    border-radius: 3px;
+    background: var(--vino-suave);
+    box-shadow: inset 0 0 0 1.5px var(--vino);
+  }
+
+  i.real {
+    height: 4px;
+    background: var(--tinta);
+    box-shadow: none;
+  }
+}
+
+/* Transición entre pantallas: una entrada breve; nada si la persona pidió menos movimiento. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.16s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  app-shell > nav {
+    display: none !important;
+  }
+}

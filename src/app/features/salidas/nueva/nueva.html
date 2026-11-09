@@ -1,0 +1,198 @@
+<div class="pagina">
+  <a class="volver chico apagado" routerLink="/salidas">
+    <app-icono nombre="atras" [tamano]="16" /> Mis salidas
+  </a>
+  <h1 class="titulo">¿A qué <em>sales?</em></h1>
+
+  <div class="tipos" role="radiogroup" aria-label="Tipo de salida">
+    @for (opcion of tipos; track opcion.valor) {
+      <button
+        type="button"
+        class="tipo"
+        role="radio"
+        [attr.aria-checked]="tipo() === opcion.valor"
+        [class.activo]="tipo() === opcion.valor"
+        (click)="tipo.set(opcion.valor)"
+      >
+        <app-icono [nombre]="opcion.icono" [tamano]="24" />
+        <span class="tipo-texto">{{ opcion.texto }}</span>
+        <span class="chico apagado">{{ opcion.nota }}</span>
+      </button>
+    }
+  </div>
+
+  <section class="bloque">
+    <h2 class="titulo-chico">¿Cuándo?</h2>
+    <div class="fechas">
+      <button type="button" class="pastilla" [class.activa]="fecha() === hoy" (click)="fecha.set(hoy)">
+        Hoy
+      </button>
+      <button
+        type="button"
+        class="pastilla"
+        [class.activa]="fecha() === manana"
+        (click)="fecha.set(manana)"
+      >
+        Mañana
+      </button>
+      <input
+        class="campo fecha"
+        type="date"
+        aria-label="Otra fecha"
+        [min]="hoy"
+        [max]="maximo"
+        [ngModel]="fecha()"
+        (ngModelChange)="escribirFecha($event)"
+      />
+    </div>
+  </section>
+
+  <section class="bloque">
+    <div class="titulo-con-accion">
+      <h2 class="titulo-chico">¿A qué hora?</h2>
+      <label class="interruptor">
+        <input
+          type="checkbox"
+          [ngModel]="!regresa()"
+          (ngModelChange)="alternarRegreso(!$event)"
+        />
+        <span>No regreso</span>
+      </label>
+    </div>
+    <p class="chico apagado ayuda">Arrastra sobre la jornada o escribe la hora.</p>
+
+    <div class="regla-editable">
+      <app-regla
+        [editable]="true"
+        tono="editando"
+        [(salida)]="salida"
+        [(regreso)]="regreso"
+        [regresa]="regresa()"
+      />
+    </div>
+
+    <div class="horas-escritas">
+      <div>
+        <label class="etiqueta-campo" for="salida">Salida</label>
+        <input
+          id="salida"
+          class="campo hora"
+          type="time"
+          min="09:00"
+          max="18:00"
+          step="300"
+          [ngModel]="salida()"
+          (ngModelChange)="escribirSalida($event)"
+        />
+      </div>
+      @if (regresa()) {
+        <div>
+          <label class="etiqueta-campo" for="regreso">Regreso</label>
+          <input
+            id="regreso"
+            class="campo hora"
+            type="time"
+            min="09:00"
+            max="18:00"
+            step="300"
+            [ngModel]="regreso()"
+            (ngModelChange)="escribirRegreso($event)"
+          />
+        </div>
+      }
+    </div>
+  </section>
+
+  @if (esLaboral()) {
+    <section class="bloque">
+      <h2 class="titulo-chico">¿De dónde a dónde?</h2>
+      <label class="etiqueta-campo separado" for="origen">Sales de</label>
+      <select
+        id="origen"
+        class="campo"
+        [ngModel]="origen()"
+        (ngModelChange)="origen.set($event ? +$event : null)"
+      >
+        <option [ngValue]="null">Elige un edificio</option>
+        @for (edificio of origenes(); track edificio.id) {
+          <option [ngValue]="edificio.id">{{ edificio.nombre }}</option>
+        }
+      </select>
+
+      <label class="etiqueta-campo separado" for="destino">Vas a</label>
+      <input
+        id="destino"
+        class="campo"
+        placeholder="Buscar edificio"
+        [ngModel]="filtroDestino()"
+        (ngModelChange)="filtroDestino.set($event)"
+      />
+      <div class="destinos">
+        @for (destino of destinosVisibles(); track destino.id) {
+          <button
+            type="button"
+            class="destino"
+            [attr.aria-pressed]="destinos().includes(destino.id)"
+            [class.activo]="destinos().includes(destino.id)"
+            (click)="alternarDestino(destino.id)"
+          >
+            {{ destino.nombre }}
+          </button>
+        }
+        <button
+          type="button"
+          class="destino"
+          [attr.aria-pressed]="quiereOtro()"
+          [class.activo]="quiereOtro()"
+          (click)="alternarDestino(DESTINO_OTRO)"
+        >
+          Otro lugar
+        </button>
+      </div>
+
+      @if (quiereOtro()) {
+        <label class="etiqueta-campo separado" for="otro">¿Cuál?</label>
+        <input
+          id="otro"
+          class="campo"
+          maxlength="100"
+          placeholder="Por ejemplo, Santander"
+          [ngModel]="otro()"
+          (ngModelChange)="otro.set($event)"
+        />
+      }
+    </section>
+  }
+
+  <details class="legal chico apagado">
+    <summary>Fundamento de esta solicitud</summary>
+    <p>
+      En atención a los artículos 30, 31 y 32 del Capítulo Segundo – Asistencia y Puntualidad, del
+      Reglamento de las Condiciones Generales del Trabajo del Poder Legislativo del Estado de México
+      se dispone del siguiente formulario para realizar la solicitud de permiso para atender trámites
+      particulares o relacionados con el desempeño de sus labores. El registro de la solicitud no
+      implica su aprobación: deberá esperar la respuesta de su jefe inmediato superior.
+    </p>
+  </details>
+
+  <div class="envio">
+    <div class="envio-interior">
+      <div class="frase">
+        <p class="frase-texto">{{ frase() }}</p>
+        @if (errores()) {
+          <p class="error chico" role="alert">{{ errores() }}</p>
+        } @else if (faltante()) {
+          <p class="chico apagado">{{ faltante() }}</p>
+        }
+      </div>
+      <button
+        type="button"
+        class="boton primario grande"
+        [disabled]="!!faltante() || enviando()"
+        (click)="enviar()"
+      >
+        {{ enviando() ? 'Enviando…' : 'Enviar solicitud' }}
+      </button>
+    </div>
+  </div>
+</div>

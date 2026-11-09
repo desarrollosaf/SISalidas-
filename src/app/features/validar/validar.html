@@ -1,0 +1,148 @@
+<div class="pagina">
+  <header class="encabezado">
+    <div>
+      <h1 class="titulo">Por validar</h1>
+      @if (permisos()?.length) {
+        <p class="apagado sub">{{ subtitulo() }}</p>
+      }
+    </div>
+    @if ((permisos()?.length ?? 0) > 1) {
+      <button
+        class="boton primario"
+        type="button"
+        [disabled]="ocupado() || !visibles().length"
+        (click)="aprobarTodas()"
+      >
+        @if (aprobandoTodas()) {
+          <span class="giro" aria-hidden="true"></span> Aprobando…
+        } @else {
+          <app-icono nombre="listo" [tamano]="18" />
+          {{ filtrando() ? 'Aprobar ' + visibles().length : 'Aprobar todas' }}
+        }
+      </button>
+    }
+  </header>
+
+  @if ((permisos()?.length ?? 0) > 1) {
+    <div class="buscar">
+      <svg class="buscar-icono" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" />
+      </svg>
+      <input
+        class="campo"
+        type="search"
+        placeholder="Buscar por nombre, área, tipo, destino o fecha"
+        aria-label="Buscar solicitudes"
+        [value]="busqueda()"
+        (input)="busqueda.set($any($event.target).value)"
+        (keydown.escape)="busqueda.set('')"
+      />
+      @if (busqueda()) {
+        <button type="button" class="limpiar" aria-label="Limpiar búsqueda" (click)="busqueda.set('')">
+          <app-icono nombre="cerrar" [tamano]="16" />
+        </button>
+      }
+    </div>
+  }
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  } @else if (!permisos()) {
+    @for (i of [1, 2, 3]; track i) {
+      <div class="esqueleto hueco"></div>
+    }
+  } @else {
+    <div class="lista">
+      @for (permiso of visibles(); track permiso.id) {
+        <article class="tarjeta solicitud">
+          <div class="cabeza">
+            <div class="quien">
+              <a class="nombre" [routerLink]="['/salidas', permiso.id]">{{ permiso.nombre }}</a>
+              <span class="chico apagado">{{ permiso.departamento }}</span>
+            </div>
+            <div class="cuando">
+              <span class="titulo-chico">{{ fechaRelativa(permiso.fecha) }}</span>
+              <span class="chico apagado">{{ permiso.tipoNombre }}</span>
+            </div>
+          </div>
+
+          <div class="horario">
+            <app-regla
+              [compacta]="true"
+              [salida]="permiso.horaSalida"
+              [regreso]="permiso.horaRegreso"
+              [regresa]="permiso.regresa"
+              tono="pendiente"
+            />
+            <p class="detalle-horario">
+              <span class="hora">
+                {{ permiso.horaSalida }}
+                @if (permiso.regresa) {
+                  – {{ permiso.horaRegreso }}
+                }
+              </span>
+              <span class="chico apagado">
+                @if (permiso.regresa) {
+                  {{ duracion(permiso.minutosSolicitados) }}
+                } @else {
+                  No regresa
+                }
+              </span>
+            </p>
+          </div>
+
+          @if (permiso.origen) {
+            <p class="ruta chico">
+              <app-icono nombre="edificio" [tamano]="16" />
+              <span>
+                {{ permiso.origen }} →
+                @for (destino of permiso.destinos; track $index; let ultimo = $last) {
+                  {{ destino.nombre }}{{ ultimo ? '' : ', ' }}
+                }
+              </span>
+            </p>
+          }
+
+          <div class="decision">
+            <button
+              class="boton"
+              type="button"
+              [disabled]="enCurso() === permiso.id || aprobandoTodas()"
+              (click)="decidir(permiso, false)"
+            >
+              Denegar
+            </button>
+            <button
+              class="boton primario"
+              type="button"
+              [disabled]="enCurso() === permiso.id || aprobandoTodas()"
+              (click)="decidir(permiso, true)"
+            >
+              <app-icono nombre="listo" [tamano]="18" /> Aprobar
+            </button>
+          </div>
+        </article>
+      } @empty {
+        @if (filtrando() && permisos()?.length) {
+          <div class="vacio">
+            <p class="titulo-medio">Sin <em class="acento">coincidencias</em></p>
+            <p class="apagado">Ninguna solicitud coincide con “{{ busqueda() }}”.</p>
+            <button class="boton" type="button" (click)="busqueda.set('')">Limpiar búsqueda</button>
+          </div>
+        } @else {
+        <div class="vacio">
+          <p class="titulo-medio">
+            @if (resueltas() > 0) {
+              Listo, <em class="acento">todo al día</em>
+            } @else {
+              Nada <em class="acento">pendiente</em>
+            }
+          </p>
+          <p class="apagado">Las solicitudes nuevas de tu área aparecerán aquí.</p>
+        </div>
+        }
+      }
+    </div>
+  }
+</div>

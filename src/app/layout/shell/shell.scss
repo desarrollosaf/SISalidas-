@@ -1,0 +1,174 @@
+:host {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  min-height: 100dvh;
+}
+
+.riel {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100dvh;
+  padding: 20px 0 16px;
+  border-right: 1px solid var(--linea);
+}
+
+.marca {
+  display: block;
+  margin-bottom: 28px;
+
+  img {
+    display: block;
+  }
+}
+
+.entradas {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 0 8px;
+}
+
+.entrada {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 9px 2px;
+  border-radius: 12px;
+  color: var(--apagado);
+  font-size: 0.71875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    color: var(--tinta);
+  }
+
+  &.activa {
+    background: var(--vino-suave);
+    color: var(--vino);
+  }
+}
+
+.icono {
+  position: relative;
+  display: inline-flex;
+}
+
+.insignia {
+  position: absolute;
+  top: -6px;
+  left: 14px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--vino);
+  box-shadow: 0 0 0 2px var(--fondo);
+  color: var(--sobre-vino);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 17px;
+  text-align: center;
+}
+
+.pie {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--fondo-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  &.activa {
+    background: var(--vino);
+    color: var(--sobre-vino);
+  }
+}
+
+.solo-movil {
+  display: none;
+}
+
+.contenido {
+  min-width: 0;
+}
+
+.inactividad {
+  position: fixed;
+  z-index: 40;
+  top: 16px;
+  left: 50%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: max-content;
+  max-width: 92vw;
+  padding: 10px 12px 10px 20px;
+  border-radius: 999px;
+  background: var(--superficie);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 15%);
+  font-size: 0.9375rem;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 720px) {
+  :host {
+    display: block;
+  }
+
+  .riel {
+    position: fixed;
+    z-index: 30;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--linea);
+    border-right: 0;
+    background: color-mix(in srgb, var(--fondo) 88%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  .marca,
+  .pie {
+    display: none;
+  }
+
+  .entradas {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0;
+  }
+
+  .entrada {
+    flex: 1;
+    max-width: 92px;
+  }
+
+  .solo-movil {
+    display: flex;
+  }
+}

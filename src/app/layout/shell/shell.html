@@ -1,0 +1,57 @@
+<nav class="riel" aria-label="Principal">
+  <a class="marca" routerLink="/hoy" aria-label="Salidas, inicio">
+    <img src="assets/logo-osfem.png" alt="" width="44" height="24" />
+  </a>
+
+  <div class="entradas">
+    @for (entrada of entradas(); track entrada.ruta) {
+      <a class="entrada" [routerLink]="entrada.ruta" routerLinkActive="activa">
+        <span class="icono">
+          <app-icono [nombre]="entrada.icono" [tamano]="22" />
+          @if (entrada.aviso && pendientes() > 0) {
+            <span class="insignia" [attr.aria-label]="pendientes() + ' pendientes'">{{
+              pendientes()
+            }}</span>
+          }
+        </span>
+        <span class="texto">{{ entrada.etiqueta }}</span>
+      </a>
+    }
+    <a class="entrada solo-movil" routerLink="/mi-cuenta" routerLinkActive="activa">
+      <span class="icono"><app-icono nombre="cuenta" [tamano]="22" /></span>
+      <span class="texto">Cuenta</span>
+    </a>
+  </div>
+
+  <div class="pie">
+    <button
+      type="button"
+      class="boton-icono"
+      (click)="tema.alternar()"
+      [attr.aria-label]="tema.oscuro() ? 'Usar tema claro' : 'Usar tema oscuro'"
+    >
+      <app-icono [nombre]="tema.oscuro() ? 'sol' : 'luna'" />
+    </button>
+    <a
+      class="avatar"
+      routerLink="/mi-cuenta"
+      routerLinkActive="activa"
+      [attr.aria-label]="'Mi cuenta, ' + auth.currentUser()?.nombre"
+      >{{ iniciales() }}</a
+    >
+    <button type="button" class="boton-icono" (click)="salir()" aria-label="Cerrar sesión">
+      <app-icono nombre="salir" />
+    </button>
+  </div>
+</nav>
+
+<main class="contenido">
+  <router-outlet />
+</main>
+
+@if (inactividad.showWarning()) {
+  <div class="inactividad" role="alert">
+    <span>Tu sesión se cerrará en {{ inactividad.secondsRemaining() }} s por inactividad.</span>
+    <button type="button" class="boton" (click)="inactividad.staySignedIn()">Seguir aquí</button>
+  </div>
+}

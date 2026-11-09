@@ -1,0 +1,68 @@
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pastillas {
+  display: flex;
+  gap: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.pastilla {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--apagado);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--tinta);
+  }
+
+  &.activa {
+    background: var(--tinta);
+    color: var(--fondo);
+  }
+}
+
+.anio {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.grupo {
+  margin-top: 28px;
+}
+
+.mes {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--linea);
+  font-family: var(--serif);
+  font-size: 1.375rem;
+  font-weight: 400;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.hueco {
+  margin-top: 10px;
+}
+
+.error {
+  color: var(--peligro);
+}

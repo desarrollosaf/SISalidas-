@@ -1,0 +1,73 @@
+<div class="regla" [class.editable]="editable()" [attr.data-tono]="tono()">
+  <div
+    #pista
+    class="pista"
+    role="group"
+    [attr.aria-label]="descripcion()"
+    (pointerdown)="tocarPista($event)"
+    (pointermove)="mover($event)"
+    (pointerup)="soltar()"
+    (pointercancel)="soltar()"
+  >
+    <div
+      class="bloque"
+      [class.sin-regreso]="!regresa()"
+      [style.left.%]="bloque().left"
+      [style.width.%]="bloque().width"
+      (pointerdown)="iniciar($event, regresa() ? 'bloque' : 'salida')"
+    >
+      @if (editable()) {
+        <button
+          type="button"
+          class="asa inicio"
+          [class.elevada]="etiquetasJuntas()"
+          role="slider"
+          aria-label="Hora de salida"
+          aria-valuemin="540"
+          aria-valuemax="1080"
+          [attr.aria-valuetext]="salida()"
+          (pointerdown)="iniciar($event, 'salida')"
+          (keydown)="teclaSalida($event)"
+        >
+          <span class="etiqueta">{{ salida() }}</span>
+        </button>
+        @if (regresa() && regreso()) {
+          <button
+            type="button"
+            class="asa fin"
+            role="slider"
+            aria-label="Hora de regreso"
+            aria-valuemin="540"
+            aria-valuemax="1080"
+            [attr.aria-valuetext]="regreso()"
+            (pointerdown)="iniciar($event, 'regreso')"
+            (keydown)="teclaRegreso($event)"
+          >
+            <span class="etiqueta">{{ regreso() }}</span>
+          </button>
+        }
+      }
+    </div>
+
+    @if (real(); as r) {
+      <div
+        class="real"
+        [class.abierto]="r.abierto"
+        [style.left.%]="r.left"
+        [style.width.%]="r.width"
+      ></div>
+    }
+
+    @if (posicionAhora(); as ahora) {
+      <div class="ahora" [style.left.%]="ahora"></div>
+    }
+  </div>
+
+  @if (!compacta()) {
+    <div class="horas" aria-hidden="true">
+      @for (hora of horas; track hora) {
+        <span [class.impar]="hora % 3 !== 0">{{ hora }}</span>
+      }
+    </div>
+  }
+</div>
