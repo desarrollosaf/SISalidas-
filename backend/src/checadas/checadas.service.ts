@@ -101,15 +101,21 @@ export class ChecadasService implements OnApplicationBootstrap {
     const empleados = await this.empleados.findAll({
       where: { emp_code: { [Op.in]: [...new Set(recientes.map((t) => t.emp_code))] } },
     });
-    const rfcPorEmpleado = new Map(empleados.map((e) => [e.emp_code, e.first_name]));
+    // emp_code se compara como texto: en la base real una tabla lo guarda como número y la otra
+    // como texto, y sin normalizar ninguna checada encontraba a su empleado (fallaba en silencio).
+    const clave = (codigo: unknown) => String(codigo ?? '').trim();
+    const rfcPorEmpleado = new Map(
+      empleados.map((e) => [clave(e.emp_code), String(e.first_name ?? '').trim()]),
+    );
 
+    let registradas = 0;
     // Del más antiguo al más nuevo: Laravel las recorría al revés, y si alguien checaba dos veces
     // entre corridas se le intercambiaban la salida y la entrada.
     for (const transaccion of [...recientes].reverse()) {
-      const rfc = rfcPorEmpleado.get(transaccion.emp_code);
+      const rfc = rfcPorEmpleado.get(clave(transaccion.emp_code));
       if (!rfc) continue;
       try {
-        await this.procesarChecada(transaccion, rfc, hoy);
+        if (await this.procesarChecada(transaccion, rfc, hoy)) registradas++;
       } catch (error) {
         this.logger.error(
           `No se pudo procesar la checada ${transaccion.id}`,
@@ -117,20 +123,21 @@ export class ChecadasService implements OnApplicationBootstrap {
         );
       }
     }
+    if (registradas) this.logger.log(`Checadas registradas: ${registradas}`);
   }
 
   private async procesarChecada(
     transaccion: TransaccionChecador,
     rfc: string,
     hoy: string,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const idChecador = String(transaccion.id);
-    if (await this.checadas.findOne({ where: { id_checador: idChecador } })) return;
+    if (await this.checadas.findOne({ where: { id_checador: idChecador } })) return false;
 
     const permiso = await this.registros.findOne({
       where: { rfc_usuario: rfc, status: 1, fecha_permiso: hoy },
     });
-    if (!permiso) return;
+    if (!permiso) return false;
 
     const ubicacion = UBICACION_POR_TERMINAL[transaccion.terminal_alias];
     const checadasPrevias = await this.checadas.count({
@@ -172,6 +179,7 @@ export class ChecadasService implements OnApplicationBootstrap {
     }
 
     await this.avisarAlJefe(rfc, esSalida ? 'salida' : 'entrada', transaccion.punch_time);
+    return true;
   }
 
   private async avisarAlJefe(rfc: string, tipo: string, hora: Date): Promise<void> {
