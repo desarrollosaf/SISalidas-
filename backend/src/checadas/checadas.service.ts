@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/sequelize';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -26,7 +26,7 @@ const LOTE = 50;
  * Laravel debe quedar apagado, o los avisos al jefe llegarían repetidos.
  */
 @Injectable()
-export class ChecadasService {
+export class ChecadasService implements OnApplicationBootstrap {
   private readonly logger = new Logger(ChecadasService.name);
   private procesando = false;
 
@@ -42,6 +42,15 @@ export class ChecadasService {
     @InjectModel(Registro) private readonly registros: typeof Registro,
     @InjectModel(Destino) private readonly destinos: typeof Destino,
   ) {}
+
+  /** Que quede en el log si la lectura de checadores está encendida: apagada no deja otro rastro. */
+  onApplicationBootstrap(): void {
+    if (this.activo) {
+      this.logger.log('Lectura de checadores ENCENDIDA (cada minuto)');
+    } else {
+      this.logger.warn('Lectura de checadores APAGADA (CHECADAS_ACTIVO no es true)');
+    }
+  }
 
   private get activo(): boolean {
     return !!this.config.get<boolean>('operacion.checadasActivo');
